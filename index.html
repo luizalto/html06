@@ -55,9 +55,35 @@ Abrir a Shopee
 <script>
 (function(){
 
-const LINK_SHOPEE = "https://s.shopee.com.br/4qBaEnyoyr";
-const API_URL = "https://shopee-utm-tracker.onrender.com";
-const UC = "N33lado";
+// ============================
+// 🔥 PEGAR PARÂMETROS DA URL
+// ============================
+
+function getParams() {
+  const params = new URLSearchParams(window.location.search);
+  return {
+    link: params.get("link"),
+    uc: params.get("uc")
+  };
+}
+
+const params = getParams();
+
+const LINK_SHOPEE = params.link;
+const UC = params.uc;
+
+// ============================
+// ❌ VALIDAÇÃO
+// ============================
+
+if (!LINK_SHOPEE || !UC) {
+  alert("Erro: link ou UC não informado.");
+  throw new Error("Parâmetros inválidos");
+}
+
+// ============================
+// 🔘 EVENTO DE CLIQUE
+// ============================
 
 document.getElementById("btnShopee").addEventListener("click", function(e){
   e.preventDefault();
@@ -71,7 +97,6 @@ document.getElementById("btnShopee").addEventListener("click", function(e){
 
   let pos;
 
-  // 🔥 LÓGICA ORIGINAL (centro 10%)
   const inicioCentro = largura * 0.45;
   const fimCentro = largura * 0.55;
 
@@ -86,15 +111,14 @@ document.getElementById("btnShopee").addEventListener("click", function(e){
   }
 
   // ============================
-  // 🔥 EVENTOS META (ADICIONADO)
+  // 📊 EVENTOS META
   // ============================
 
-  // Evento com parâmetro
   fbq('trackCustom', 'ClickShopee', {
-    position: pos
+    position: pos,
+    uc: UC
   });
 
-  // Eventos separados
   if (pos === "Left") {
     fbq('trackCustom', 'ClickShopee_Left');
   } else if (pos === "Center") {
@@ -103,17 +127,24 @@ document.getElementById("btnShopee").addEventListener("click", function(e){
     fbq('trackCustom', 'ClickShopee_Right');
   }
 
+  // 🔥 EVENTO PADRÃO (IMPORTANTE PRA OTIMIZAÇÃO)
+  fbq('track', 'InitiateCheckout');
+
   // ============================
-  // 🔥 FLUXO ORIGINAL (INALTERADO)
+  // 🔗 REDIRECIONAMENTO
   // ============================
 
   const link = encodeURIComponent(LINK_SHOPEE);
-  const finalURL = `${API_URL}/?link=${link}&pos=${pos}&uc=${UC}`;
+  const finalURL = `https://shopee-utm-tracker.onrender.com/?link=${link}&pos=${pos}&uc=${UC}`;
 
   console.log("POS:", pos);
   console.log("REDIRECT:", finalURL);
 
-  window.location.href = finalURL;
+  // ⏱ Delay pra garantir envio pro Meta
+  setTimeout(() => {
+    window.location.href = finalURL;
+  }, 150);
+
 });
 
 })();
