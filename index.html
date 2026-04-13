@@ -56,21 +56,28 @@ Abrir a Shopee
 (function(){
 
 // ============================
-// 🔥 PEGAR PARÂMETROS DA URL
+// 🔥 PEGAR PARÂMETROS
 // ============================
 
-function getParams() {
-  const params = new URLSearchParams(window.location.search);
-  return {
-    link: params.get("link"),
-    uc: params.get("uc")
-  };
+const params = new URLSearchParams(window.location.search);
+
+let LINK_SHOPEE = null;
+let UC = null;
+
+// 🔥 MODO 1 (RECOMENDADO): dest=LINK|||UC
+const raw = params.get("dest");
+
+if (raw && raw.includes("|||")) {
+  const partes = raw.split("|||");
+  LINK_SHOPEE = partes[0];
+  UC = partes[1];
 }
 
-const params = getParams();
-
-const LINK_SHOPEE = params.link;
-const UC = params.uc;
+// 🔥 MODO 2 (fallback): dest=LINK&uc=XXX
+if (!LINK_SHOPEE) {
+  LINK_SHOPEE = params.get("dest");
+  UC = params.get("uc");
+}
 
 // ============================
 // ❌ VALIDAÇÃO
@@ -82,7 +89,7 @@ if (!LINK_SHOPEE || !UC) {
 }
 
 // ============================
-// 🔘 EVENTO DE CLIQUE
+// 🔘 CLIQUE
 // ============================
 
 document.getElementById("btnShopee").addEventListener("click", function(e){
@@ -127,7 +134,7 @@ document.getElementById("btnShopee").addEventListener("click", function(e){
     fbq('trackCustom', 'ClickShopee_Right');
   }
 
-  // 🔥 EVENTO PADRÃO (IMPORTANTE PRA OTIMIZAÇÃO)
+  // Evento padrão (melhora otimização)
   fbq('track', 'InitiateCheckout');
 
   // ============================
@@ -135,12 +142,15 @@ document.getElementById("btnShopee").addEventListener("click", function(e){
   // ============================
 
   const link = encodeURIComponent(LINK_SHOPEE);
+
   const finalURL = `https://shopee-utm-tracker.onrender.com/?link=${link}&pos=${pos}&uc=${UC}`;
 
+  console.log("LINK:", LINK_SHOPEE);
+  console.log("UC:", UC);
   console.log("POS:", pos);
   console.log("REDIRECT:", finalURL);
 
-  // ⏱ Delay pra garantir envio pro Meta
+  // Delay pra garantir envio pro Meta
   setTimeout(() => {
     window.location.href = finalURL;
   }, 150);
