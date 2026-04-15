@@ -193,12 +193,21 @@ document.getElementById("btnShopee").addEventListener("click", function(e){
   fbq('track', 'InitiateCheckout');
 
   // ============================
+  // 🔥 UC COM TEMPO EMBUTIDO
+  // ============================
+
+  let tempoFinal = tempoLabel || "S0";
+
+  let finalUC = (UC + tempoFinal)
+    .replace(/[^a-zA-Z0-9]/g,"");
+
+  // ============================
   // 🔗 REDIRECIONAMENTO
   // ============================
 
   const link = encodeURIComponent(LINK_SHOPEE);
 
-  const finalURL = `https://shopee-utm-tracker.onrender.com/?link=${link}&pos=${pos}&uc=${UC}&t=${tempoLabel}`;
+  const finalURL = `https://shopee-utm-tracker.onrender.com/?link=${link}&pos=${pos}&uc=${finalUC}`;
 
   setTimeout(() => {
     window.location.href = finalURL;
