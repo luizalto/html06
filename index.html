@@ -2,14 +2,16 @@
 <html lang="pt-br">
 <head>
 
+<!-- CLARITY -->
 <script type="text/javascript">
-    (function(c,l,a,r,i,t,y){
-        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-    })(window, document, "clarity", "script", "wbckaw2wfg");
+(function(c,l,a,r,i,t,y){
+c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+})(window, document, "clarity", "script", "wbckaw2wfg");
 </script>
-  
+
+<!-- META PIXEL -->
 <script>
 !function(f,b,e,v,n,t,s){
 if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -27,7 +29,6 @@ fbq('track', 'PageView');
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Abrir Shopee</title>
 
 <style>
 body {
@@ -64,7 +65,7 @@ Abrir a Shopee
 (function(){
 
 // ============================
-// 🔥 PEGAR PARÂMETROS
+// 🔥 PARÂMETROS
 // ============================
 
 const params = new URLSearchParams(window.location.search);
@@ -72,7 +73,6 @@ const params = new URLSearchParams(window.location.search);
 let LINK_SHOPEE = null;
 let UC = null;
 
-// 🔥 MODO 1 (RECOMENDADO): dest=LINK|||UC
 const raw = params.get("dest");
 
 if (raw && raw.includes("|||")) {
@@ -81,15 +81,10 @@ if (raw && raw.includes("|||")) {
   UC = partes[1];
 }
 
-// 🔥 MODO 2 (fallback): dest=LINK&uc=XXX
 if (!LINK_SHOPEE) {
   LINK_SHOPEE = params.get("dest");
   UC = params.get("uc");
 }
-
-// ============================
-// ❌ VALIDAÇÃO
-// ============================
 
 if (!LINK_SHOPEE || !UC) {
   alert("Erro: link ou UC não informado.");
@@ -97,7 +92,65 @@ if (!LINK_SHOPEE || !UC) {
 }
 
 // ============================
-// 🔘 CLIQUE
+// ⏱️ TEMPO
+// ============================
+
+let tempo=0, tempoLabel="";
+let disparouS30=false;
+
+let tempoS0a1=false;
+let tempoS1a2=false;
+
+let evento01=false;
+let evento02=false;
+
+let clickRight=false;
+
+function tempoLoop(){
+  tempo++;
+
+  if(tempo<=30){
+    tempoLabel="S"+(tempo-1)+"a"+tempo;
+    fbq('trackCustom',"Tempo_"+tempoLabel);
+  }else if(!disparouS30){
+    tempoLabel="S30";
+    fbq('trackCustom',"Tempo_S30");
+    disparouS30=true;
+  }
+
+  if(tempoLabel==="S0a1"){
+    tempoS0a1=true;
+    checkEventos();
+  }
+
+  if(tempoLabel==="S1a2"){
+    tempoS1a2=true;
+    checkEventos();
+  }
+}
+
+tempoLoop();
+setInterval(tempoLoop,1000);
+
+// ============================
+// 🎯 EVENTOS AVANÇADOS
+// ============================
+
+function checkEventos(){
+
+  if(clickRight && tempoS0a1 && !evento02){
+    fbq('trackCustom','EVENTO02');
+    evento02=true;
+  }
+
+  if(clickRight && tempoS1a2 && !evento01){
+    fbq('trackCustom','EVENTO01');
+    evento01=true;
+  }
+}
+
+// ============================
+// 🖱️ CLIQUE
 // ============================
 
 document.getElementById("btnShopee").addEventListener("click", function(e){
@@ -115,15 +168,9 @@ document.getElementById("btnShopee").addEventListener("click", function(e){
   const inicioCentro = largura * 0.45;
   const fimCentro = largura * 0.55;
 
-  if (x < inicioCentro) {
-    pos = "Left";
-  } 
-  else if (x > fimCentro) {
-    pos = "Right";
-  } 
-  else {
-    pos = "Center";
-  }
+  if (x < inicioCentro) pos = "Left";
+  else if (x > fimCentro) pos = "Right";
+  else pos = "Center";
 
   // ============================
   // 📊 EVENTOS META
@@ -134,15 +181,15 @@ document.getElementById("btnShopee").addEventListener("click", function(e){
     uc: UC
   });
 
-  if (pos === "Left") {
-    fbq('trackCustom', 'ClickShopee_Left');
-  } else if (pos === "Center") {
-    fbq('trackCustom', 'ClickShopee_Center');
-  } else {
-    fbq('trackCustom', 'ClickShopee_Right');
+  if (pos === "Left") fbq('trackCustom', 'ClickShopee_Left');
+  else if (pos === "Center") fbq('trackCustom', 'ClickShopee_Center');
+  else fbq('trackCustom', 'ClickShopee_Right');
+
+  if(pos === "Right"){
+    clickRight = true;
+    checkEventos();
   }
 
-  // Evento padrão (melhora otimização)
   fbq('track', 'InitiateCheckout');
 
   // ============================
@@ -151,17 +198,11 @@ document.getElementById("btnShopee").addEventListener("click", function(e){
 
   const link = encodeURIComponent(LINK_SHOPEE);
 
-  const finalURL = `https://shopee-utm-tracker.onrender.com/?link=${link}&pos=${pos}&uc=${UC}`;
+  const finalURL = `https://shopee-utm-tracker.onrender.com/?link=${link}&pos=${pos}&uc=${UC}&t=${tempoLabel}`;
 
-  console.log("LINK:", LINK_SHOPEE);
-  console.log("UC:", UC);
-  console.log("POS:", pos);
-  console.log("REDIRECT:", finalURL);
-
-  // Delay pra garantir envio pro Meta
   setTimeout(() => {
     window.location.href = finalURL;
-  }, 150);
+  }, 200);
 
 });
 
