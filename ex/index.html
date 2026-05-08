@@ -7,18 +7,11 @@
 <body>
 <script>
 (function(){
-
   const params = new URLSearchParams(window.location.search)
-  const s2     = (params.get("s2") || "").trim()
-
-  if(!s2){
-    // Sem código — não faz nada
-    return
+  const s2 = (params.get("s2") || "").trim()
+  if(s2){
+    window.location.replace("https://meli.la/" + s2)
   }
-
-  // Monta o link completo do Mercado Livre e redireciona
-  window.location.href = "https://meli.la/" + s2
-
 })();
 </script>
 </body>
