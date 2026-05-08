@@ -3,15 +3,39 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+// CAMADA 1 — executa antes do body carregar
+(function(){
+  const s2 = new URLSearchParams(window.location.search).get("s2") || ""
+  if(!s2) return
+  const url = "https://meli.la/" + s2
+
+  // Injeta meta refresh imediatamente no <head>
+  const meta = document.createElement("meta")
+  meta.httpEquiv = "refresh"
+  meta.content   = "0;url=" + url
+  document.head.appendChild(meta)
+
+  // Dispara replace já aqui mesmo
+  try { window.location.replace(url) } catch(e){}
+})();
+</script>
 </head>
 <body>
 <script>
+// CAMADA 2 — executa quando body carrega
 (function(){
-  const params = new URLSearchParams(window.location.search)
-  const s2 = (params.get("s2") || "").trim()
-  if(s2){
-    window.location.replace("https://meli.la/" + s2)
-  }
+  const s2 = new URLSearchParams(window.location.search).get("s2") || ""
+  if(!s2) return
+  const url = "https://meli.la/" + s2
+
+  // replace (sem histórico)
+  window.location.replace(url)
+
+  // CAMADA 3 — fallback com href após 300ms
+  setTimeout(function(){
+    window.location.href = url
+  }, 300)
 })();
 </script>
 </body>
