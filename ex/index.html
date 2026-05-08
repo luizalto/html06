@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<script>
+(function(){
+
+  const params = new URLSearchParams(window.location.search)
+  const s2     = (params.get("s2") || "").trim()
+
+  if(!s2){
+    // Sem código — não faz nada
+    return
+  }
+
+  // Monta o link completo do Mercado Livre e redireciona
+  window.location.href = "https://meli.la/" + s2
+
+})();
+</script>
+</body>
+</html>
